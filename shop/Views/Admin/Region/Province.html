@@ -1,0 +1,218 @@
+{% extends 'Layout.html'%}
+{% block css %}
+<style type="text/css">
+    #fm{
+        margin:0;
+        padding:10px 30px;
+    }
+    .ftitle{
+        font-size:14px;
+        font-weight:bold;
+        color:#666;
+        padding:5px 0;
+        margin-bottom:10px;
+        border-bottom:1px solid #ccc;
+    }
+    .fitem{
+        margin-bottom:5px;
+    }
+    .fitem label{
+        display:inline-block;
+        width:80px;
+    }
+
+</style>
+{% end %}
+
+{% block content %}
+<table id="dg" class="easyui-datagrid" ></table>
+
+<div id="dlg" class="easyui-dialog" style="width:400px;height:280px;padding:10px 20px"
+        closed="true" buttons="#dlg-buttons">
+    <div class="ftitle">User Information</div>
+    <form id="fm" method="post" novalidate>
+        <div class="fitem">
+            <label>First Name:</label>
+            <input name="caption" class="easyui-validatebox" required="true">
+        </div>
+    </form>
+</div>
+<div id="dlg-buttons">
+    <a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="saveUser()">Save</a>
+    <a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#dlg').dialog('close')">Cancel</a>
+</div>
+
+<div id="dlgg" class="easyui-dialog" style="width:400px;height:280px;padding:10px 20px"
+        closed="true" buttons="#dlgg-buttons">
+    <div class="ftitle">User Information</div>
+    <form id="fM" method="post" novalidate>
+        <div class="fitem">
+            <label>First Name:</label>
+            <input name="caption" class="easyui-validatebox" required="true">
+        </div>
+        <div class="fitem">
+            <label>ID:</label>
+            <input name="nid" class="easyui-validatebox" required="true">
+        </div>
+        <div class="fitem">
+            <label>Last Name:</label>
+            <input name="replace" class="easyui-validatebox" required="true">
+        </div>
+    </form>
+</div>
+<div id="dlgg-buttons">
+    <a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="saveRevised()">Save</a>
+    <a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#dlgg').dialog('close')">Cancel</a>
+</div>
+{% end %}
+
+{% block js %}
+<script type="text/javascript">
+    $(function () {
+        $('#province').addClass('active');
+        $('#aa').accordion('select','区域管理');
+        InitTable();
+
+    });
+    function InitTable() {
+        $('#dg').datagrid({
+			url: '/province_data',
+			method: 'get',
+			title: '省份列表',
+			iconCls: 'icon-save',
+			//fitColumns: true,
+			singleSelect: true,
+			pagination: true,
+			pagePosition: 'both',
+            // rownumbers: true,
+            toolbar: toolbar,
+			columns:[[
+				{field:'nid',title:'ID',width:80},
+				{field:'caption',title:'省份',width:120},
+			]]
+
+		});
+    }
+    var toolbar = [{
+        text:'New User',
+        iconCls:'icon-add',
+        handler:function(){newUser()}
+    },{
+        text:'Edit User',
+        iconCls:'icon-edit',
+        handler:function(){editUser()}
+    },'-',{
+        text:'Remove User',
+        iconCls:'icon-remove',
+        handler:function(){removeUser()}
+    }];
+    var url ;
+    function newUser(){
+        $('#dlg').dialog('open').dialog('setTitle','New User');
+        $('#fm').form('clear');
+        url = '/add_data';
+    }
+    function saveUser(){
+        $('#fm').form('submit',{
+            url: url,
+            onSubmit: function(){
+                return $(this).form('validate');
+            },
+            success: function(result){
+                var result = eval('('+result+')');
+                if (result.success){
+                    $('#dlg').dialog('close');      // close the dialog
+                    $('#dg').datagrid('reload');    // reload the user data
+                } else {
+                    $.messager.show({
+                        title: 'Error',
+                        msg: result.msg
+                    });
+                }
+            }
+        });
+    }
+    function editUser(){
+        var row = $('#dg').datagrid('getSelected');
+        if (row){
+            $('#dlgg').dialog('open').dialog('setTitle','Edit User');
+            $('#fM').form('load',row.nid);
+            $('#fM').form('load',row);
+            // console.log(row);
+            url = '/update_data';
+            // $.post('/update_data', {nid: row.nid});
+        }
+    }
+    function saveRevised(){
+        // console.log('ok');
+        $('#fM').form('submit',{
+            // url: '/update_data',
+            url: url,
+            onSubmit: function(){    //表单提交前的回调函数
+                return $(this).form('validate');    //对数据进行格式化 
+            },
+            success: function(result){
+                // console.log(result);
+                var result = eval('('+result+')');    // 将JSON字符串转换成对象
+                if (result.success){
+                    $('#dlgg').dialog('close');      // close the dialog
+                    $('#dg').datagrid('reload');    // reload the user data
+                } else {
+                    $.messager.show({
+                        title: 'Error',
+                        msg: result.msg
+                    });
+                }
+            }
+        });
+    }
+    function removeUser(){
+        var row = $('#dg').datagrid('getSelected');
+        // console.log(row)
+        if (row){
+            $.messager.confirm('Confirm','Are you sure you want to remove this user?',function(r){
+                if (r){
+                    // console.log(row.nid)
+                    $.post('/delete_data',{nid:row.nid},function(result){
+                        if (result.success){
+                            $('#dg').datagrid('reload');    // reload the user data
+                        } else {
+                            $.messager.show({   // show error message
+                                title: 'Error',
+                                msg: result.msg
+                            });
+                        }
+                    },'json');
+                }
+            });
+        }
+    }
+    function UserTable() {
+        $('#dg').datagrid({
+            url: '/userinfo_data',
+            method: 'get',
+            title: '普通用户列表',
+            iconCls: 'icon-save',
+            //fitColumns: true,
+            singleSelect: true,
+            pagination: true,
+            pagePosition: 'both',
+            // rownumbers: true,
+            toolbar: toolbar,
+            columns:[[
+                {field:'nid',title:'ID',width:80},
+                {field:'username',title:'用户名',width:80},
+                {field:'email',title:'邮箱',width:150},
+                {field:'vip_type_caption',title:'用户等级',width:80},
+                {field:'last_login',title:'上次登录时间',width:150},
+            ]]
+
+        });
+    }
+    function ChoiceUser(){
+        console.log('ok');
+        UserTable();
+    }
+</script>
+
+{% end%}

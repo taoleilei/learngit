@@ -16,8 +16,11 @@ class Foo(metaclass=abc.ABCMeta):
 
 class Bar(Foo):
     """docstring for Bar"""
-    def f3(self):
+    def f1(self):
         print('666')
+    def f3(self):
+        print('999')
 
 b = Bar()
+b.f1()
 b.f3()

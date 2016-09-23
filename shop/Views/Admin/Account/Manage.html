@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Basic Layout - jQuery EasyUI Demo</title>
+    <link rel="stylesheet" type="text/css" href="{{static_url('plugins/jquery-easyui-1.5/themes/default/easyui.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('plugins/jquery-easyui-1.5/themes/icon.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('plugins/jquery-easyui-1.5/demo/demo.css')}}">
+    <script type="text/javascript" src="{{static_url('plugins/jquery-easyui-1.5/jquery.min.js')}}"></script>
+    <script type="text/javascript" src="{{static_url('plugins/jquery-easyui-1.5/jquery.easyui.min.js')}}"></script>
+</head>
+<body>
+    <h2>Basic Layout</h2>
+    <p>The layout contains north,south,west,east and center regions.</p>
+    <div style="margin:20px 0;"></div>
+    <div class="easyui-layout" style="width:980px;height:450px;">
+        <div data-options="region:'north'" style="height:50px"></div>
+        <div data-options="region:'south',split:true" style="height:50px;"></div>
+        <div data-options="region:'east',split:true" title="East" style="width:100px;"></div>
+        <div data-options="region:'west',split:true" title="West" style="width:100px;">
+            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" style="width:80px" onclick="Submit(this);" caption='1'>普通用户</a>
+            <hr>
+            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" style="width:80px" onclick="Submit(this);" caption='2'>商户</a>
+        </div>
+        <div data-options="region:'center',title:'Main Title',iconCls:'icon-ok'">
+            <table class="easyui-datagrid"
+                    data-options="url:'datagrid_data1.json',method:'get',border:false,singleSelect:true,fit:true,fitColumns:true">
+                <thead>
+                    <tr>
+                        <th data-options="field:'itemid'" width="80">User Name</th>
+                        <th data-options="field:'productid'" width="100">Email</th>
+                        <th data-options="field:'listprice',align:'right'" width="80">User Type</th>
+                        <th data-options="field:'unitcost',align:'right'" width="80">User Vip</th>
+                        <th data-options="field:'attr1'" width="150">Last Login</th>
+                        <th data-options="field:'status',align:'center'" width="60">User Id</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+    <script type="text/javascript" src="{{static_url('js/jquery-2.1.4.min.js')}}"></script>
+    <script type="text/javascript">
+        function Submit(ths){
+            $.post('/manage.html',{'caption': $(ths).attr('caption')},
+                function (callback) {
+                    data = JSON.parse(callback);
+                    // console.log(typeof data);
+                    $.each(data, function (k,v) {
+                        // k = k + 1;
+                        var tr = document.createElement('tr');
+                        var td1 = document.createElement('td');
+                        td1.innerText = v.username;
+                        var td2 = document.createElement('td');
+                        td2.innerText = v.email;
+                        var td3 = document.createElement('td');
+                        td3.innerText = v.user_type_caption;
+                        var td4 = document.createElement('td');
+                        td4.innerText = v.vip_type_caption;
+                        var td5 = document.createElement('td');
+                        td5.innerText = v.last_login;
+                        var td6 = document.createElement('td');
+                        td6.innerText = v.nid;
+                        tr.appendChild(td1);
+                        tr.appendChild(td2);
+                        tr.appendChild(td3);
+                        tr.appendChild(td4);
+                        tr.appendChild(td5);
+                        tr.appendChild(td6);
+                        $('tbody').append(tr);
+                    })
+                });
+        }
+    </script>
+</body>
+</html>

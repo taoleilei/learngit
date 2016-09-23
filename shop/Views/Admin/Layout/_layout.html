@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Complex Layout - jQuery EasyUI Demo</title>
+    <link rel="stylesheet" type="text/css" href="{{static_url('plugins/jquery-easyui-1.5/themes/default/easyui.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('plugins/jquery-easyui-1.5/themes/icon.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('plugins/jquery-easyui-1.5/demo/demo.css')}}">
+    <script type="text/javascript" src="{{static_url('plugins/jquery-easyui-1.5/jquery.min.js')}}"></script>
+    <script type="text/javascript" src="{{static_url('plugins/jquery-easyui-1.5/jquery.easyui.min.js')}}"></script>
+	<style>
+		a{
+			text-decoration: none;
+		}
+		.jd-menu{
+			display: block;
+			padding: 8px;
+			border-bottom: 1px solid #ddd;
+		}
+		.active{
+			background-color: #3b5998;
+			color:white;
+		}
+		{% block css %}
+			
+		{% end %}}
+	</style>
+</head>
+<body class="easyui-layout">
+
+		<div data-options="region:'north'" style="height:50px"></div>
+		<div data-options="region:'south',split:true" style="height:50px;"></div>
+		<div data-options="region:'west',split:true" title="菜单" style="width:200px;">
+			<div id="aa" class="easyui-accordion" data-options="fit:true,border:false">
+				<div title="区域管理">
+					<a id="jd_menu_province" class='jd-menu' href="/provinceManager.html">省</a>
+					<a id="jd_menu_city" class='jd-menu' href="/cityManager.html">市</a>
+					<a id="jd_menu_county" class='jd-menu' href="/countyManager.html">县（区）</a>
+				</div>
+				<div title="用户管理" style="padding:10px;">
+					<a class='jd-menu' href='#' id="ordinary">普通用户</a>
+					<a class='jd-menu' href='/merchantManager.html' id="jd_menu_merchant">商户</a>
+				</div>
+				<div title="JD自营" data-options="selected:true" style="padding:10px">
+					<a id="jd_menu_product" class="jd-menu" href="/ProductManager.html">产品管理</a>
+				</div>
+			</div>
+		</div>
+		<div data-options="region:'center'" title="{% block crumbs %} {% end %}">
+
+			{% block content %} {% end%}
+		</div>
+
+		{% block js %} {% end%}
+
+</body>
+</html>
